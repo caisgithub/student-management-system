@@ -1,0 +1,215 @@
+#include <iostream>
+#include<stdio.h>
+#include<stdlib.h>
+#include<string.h>
+
+#define MENU_NUM 7
+#define N 3
+
+using namespace std;
+
+typedef struct s1
+{
+char no[11]; /*学号由10个字符组成*/
+char name[15]; /*学生姓名*/
+float score[N]; /*各门课成绩*/
+float sum; /*总分*/
+float average; /*平均分*/
+struct s1 *next; /*指向后继结点的指针*/
+}STUDENT; /*定义结构体类型*/
+
+STUDENT * head=NULL;
+void InputData( STUDENT * ptr );
+void PrintMenu( );
+int Menu_Select( );
+void Init( );
+void create( );
+void print( ) ;
+void Delete( );
+void append();
+void computer();
+
+int main()
+{
+   int key;
+   while(1){
+        key=Menu_Select();
+   switch(key)
+   {
+       case 0: Init(); //初试化链表。也就是e799bee5baa6e58685e5aeb931333233656436若链表不为空则释放链表中所有数据，将head置为空(NULL)
+       break;
+       case 1: create();
+       //创建链表，输入数据
+       break;
+       case 2: Delete(); //删除一个指定学号的记录数据
+       break;
+       case 3: print(); //打印链表中所有数据
+       break;
+       case 4: computer(); //计算链表中所有人的总分和平均分
+       break;
+       case 5: append(); //追加一个数据到链表的尾部
+       break;
+       case 6: Init(); //释放链表
+       exit(0);
+    }
+    };
+}
+void PrintMenu( )
+{
+int i;
+char * menu[]={
+"0. Init list（初始化）",
+"1. Enter list（输入@截止）",
+"2. Delete a record from list",
+"3. Print list",
+"4. Compute the score",
+"5. Insert record to list",
+"6. Quit"
+};
+printf("\n\n");
+for (i=0;i<MENU_NUM;i++)
+printf("%s\n",menu[i]);
+printf("\nEnter your choice(0-6):");
+}
+int Menu_Select( )
+{
+int key;
+
+PrintMenu( );
+scanf("%d",&key);
+return key;
+}
+
+void Init( ) //初始化单链表。也就是释放链表中的所有数据
+{
+STUDENT *p,*ptr;//定义两个临时指针变量p,ptr
+p=head;ptr=head;//将两个临时变量指向头指针head ；
+while(ptr!=NULL)
+{
+ptr=ptr->next;//ptr指向下一个结构数据
+free(p);//释放p所指向的结构数据的内存
+p=ptr;//将p指向ptr所指向的数据
+}
+head=NULL;//将head指向NULL
+}
+
+void create( ) //创建单链表
+{
+STUDENT *pt, *pth=NULL; //定义两个指针变量：pt指向即将申请新的数据内存，pth指向当前数据
+while(1)
+{
+pt=(STUDENT *)malloc(sizeof(STUDENT));//让pt指向新申请的内存空间
+InputData(pt);//输入数据，存放到pt所指向的结构数据。注意让pt的next指向NULL
+if (strcmp(pt->no,"@")==0)
+{
+free(pt);//释放pt所指向的内存空间
+break;//退出循环
+}
+else if (head==NULL)
+{
+pth=pt;
+head=pt;//将头指针head和pth指向pt
+}
+else
+    {
+
+pth->next=pt; //将pth的next指向pt;
+pth=pt; //将pth指向pt;
+}
+};
+}
+
+void print( ) //打印单链表中所有数据
+{ int i=0;
+STUDENT *p;//第一个指针p
+p=head;//将p指向head
+
+printf("\n");
+printf("******************************STUDENT******************************\n");
+printf("|rec|no        | name           | sc1| sc2| sc3|  sum | ave |\n");
+printf("|---|----------|----------------|----|----|----|------|-----|\n");
+//打印表头
+while (p!=NULL)
+{
+printf("|%3d|%10s|%-16s|%4.1f|%4.1f|%4.1f|%6.1f|%5.1f|\n",
+++i,p->no,p->name,p->score[0],p->score[1],p->score[2],
+p->sum,p->average); //打印p所指向的结构中的所有数据。注意打印数据间的分隔线
+p=p->next;//将p指向p的下一个结构数据
+}
+printf("********************************END********************************\n");//打印表尾
+}
+
+void Delete( ) //删除一个记录
+{
+STUDENT *p,*pth;//定义两个指针p,pth
+char no[11];//定义一个整数no(用来存储输入的学号)
+printf("intput delete no\n");
+scanf("%s",no);//用输入语句输入一个学号存储到no中
+p=head;pth=head;//将p和pth都指向头指针
+if (strcmp(p->no,no)==0) //也就是若头指针指向的数据需要删除
+{
+head=head->next;//将head指针指向head的下一个数据；
+free(p);//释放p所指向的数据
+}
+else
+{
+p=p->next;//将p指向p的下一个数据
+while ( p!=NULL)
+{
+if (strcmp(p->no,no)==0) //找到了要删除的数据
+{
+pth->next=p->next;//将pth的next指向p的next
+free(p);//释放p
+break;//退出循环
+}
+else
+{
+pth=pth->next;//将pth指向pth的next 或 将pth指向p
+p=p->next;//将p指向p的next
+}
+}
+}
+}
+
+void append()
+{
+STUDENT *p,*pth;//定义两个指针变量p,pth
+
+pth=head;//将pth指向head
+while ( pth->next!=NULL)
+{
+pth=pth->next;//ptr指向ptr的next
+}
+
+p=(STUDENT *)malloc(sizeof(STUDENT));//将p指向新申请的内存空间
+InputData(p);p->next=NULL;//数据数据存储到p所指向的内存空间，注意将p的next置为NULL
+pth->next=p;//将ptr的next指向p
+}
+void InputData( STUDENT *ptr )
+{ int i;
+printf("enter no:");
+scanf("%s",ptr->no);
+if (strcmp(ptr->no,"@")==0 ) return;
+
+printf("enter name:");
+scanf("%s",ptr->name);
+for(i=0;i<3;i++)
+{
+printf("enter grade:");
+scanf("%f",&ptr->score[i]);
+}
+
+ptr->sum=0;
+ptr->average=0;
+ptr->next=NULL;
+}
+void computer()
+{
+STUDENT *p;
+p=head;
+for(;p;p=p->next)
+{
+p->sum=p->score[0]+p->score[1]+p->score[2];
+p->average=(p->score[0]+p->score[1]+p->score[2])/3;
+}
+}
